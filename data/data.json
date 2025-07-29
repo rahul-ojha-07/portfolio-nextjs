@@ -25,7 +25,7 @@
         "skills": true,
         "experience": true,
         "projects": true,
-        "testimonials": true,
+        "testimonials": false,
         "contact": true
     },
     "skills": [

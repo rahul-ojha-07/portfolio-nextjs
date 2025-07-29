@@ -143,11 +143,11 @@ const SkillBar: React.FC<{
                   className={`h-full bg-gradient-to-r ${styling.gradient} rounded-full relative overflow-hidden`}
                 >
                   {/* Animated shimmer effect */}
-                  <motion.div
+                  {/* <motion.div
                     animate={{ x: [-100, 300] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                     className="absolute top-0 left-0 h-full w-20 bg-white/30 skew-x-12"
-                  />
+                  /> */}
                 </motion.div>
               </div>
 
@@ -184,7 +184,10 @@ const SkillBar: React.FC<{
 };
 
 export const Skills: React.FC<SkillsProps> = ({ skillData, additionalSkills }) => {
-  const [collapsedCategories, setCollapsedCategories] = useState<string[]>([]);
+  const [collapsedCategories, setCollapsedCategories] = useState<string[]>(
+  Object.keys(skillData)
+);
+
   const [collapsedSkills, setCollapsedSkills] = useState<{ [key: string]: string[] }>({});
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });[1][2]
@@ -286,7 +289,7 @@ export const Skills: React.FC<SkillsProps> = ({ skillData, additionalSkills }) =
                       transition={{ duration: 0.4 }}
                       className="overflow-hidden"
                     >
-                      <div className="px-8 pb-8">
+                      <div className="px-8 pt-8 pb-8">
                         {/* Skills Grid */}
                         <div className="grid md:grid-cols-2 gap-8">
                           {data.skills.map((skill, skillIndex) => (
