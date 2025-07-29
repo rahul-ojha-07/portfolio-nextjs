@@ -4,53 +4,105 @@ import { motion } from 'framer-motion';
 import { PersonalData } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { FiDownload, FiMail } from 'react-icons/fi';
+import { useTheme } from '@/hooks/useTheme';
+import { Typewriter } from 'react-simple-typewriter';
 
 interface HeroProps {
   data: PersonalData;
 }
 
 export const Hero: React.FC<HeroProps> = ({ data }) => {
+  const { colors } = useTheme();
+
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Text Content */}
+    <section
+      className="min-h-screen flex flex-col justify-center relative overflow-hidden px-4 md:px-0"
+      style={{ background: colors.background }}
+    >
+      {/* Soft, blurred accent shapes - background */}
+      <motion.div
+        aria-hidden="true"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 0.18, scale: 1 }}
+        transition={{ duration: 1.2, type: 'spring' }}
+        className="pointer-events-none absolute -top-32 -left-32 w-[440px] h-[440px] rounded-full z-0 blur-3xl"
+        style={{
+          background: `radial-gradient(circle at 55% 60%, ${colors.primary}BB 0%, transparent 83%)`,
+        }}
+      />
+      <motion.div
+        aria-hidden="true"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 0.12, scale: 1.07 }}
+        transition={{ duration: 1.2, delay: 0.2, type: 'spring' }}
+        className="pointer-events-none absolute bottom-0 right-0 w-[380px] h-[380px] rounded-full z-0 blur-3xl"
+        style={{
+          background: `radial-gradient(circle at 48% 50%, ${
+            colors.secondary || colors.primary
+          }AA 0%, transparent 90%)`,
+        }}
+      />
+
+      <div className="relative max-w-7xl mx-auto py-20 z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Image: mobile order 1 (on top), desktop order 2 (right) */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="order-1 lg:order-2 flex justify-center md:justify-end -mt-12 sm:-mt-16 md:-mt-0"
+          >
+            <div className="relative w-72 h-72 sm:w-80 sm:h-80">
+              <Image
+                src={data.photo}
+                alt={data.name}
+                fill
+                className="rounded-full object-cover shadow-2xl"
+                priority
+              />
+              <div
+                className="absolute inset-0 rounded-full pointer-events-none"
+                style={{
+                  background: `linear-gradient(135deg, ${colors.primary}19 0%, ${colors.secondary || colors.primary}19 100%)`,
+                }}
+              />
+            </div>
+          </motion.div>
+
+          {/* Text: mobile order 2, desktop order 1 (left) */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="space-y-8"
+            className="order-2 lg:order-1 space-y-8 max-w-xl mx-auto lg:mx-0"
           >
             <div className="space-y-4">
-              <motion.h1 
+              <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white"
+                className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 dark:text-white leading-tight"
               >
-                Hi, I'm {data.name}
+                Hi, I&apos;m {data.name}
               </motion.h1>
-              
+
+              {/* Modern typing animation for titles */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="text-xl md:text-2xl text-gray-600 dark:text-gray-300"
+                className="text-xl sm:text-2xl font-mono text-primary-500 min-h-[2.5rem]"
               >
-                {data.title.map((title, index) => (
-                  <motion.span
-                    key={title}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6 + index * 0.2 }}
-                    className="inline-block"
-                  >
-                    {title}
-                    {index < data.title.length - 1 && (
-                      <span className="text-primary-500 mx-2">•</span>
-                    )}
-                  </motion.span>
-                ))}
+                <Typewriter
+                  words={data.title}
+                  loop={0} // infinite
+                  cursor
+                  cursorStyle="|"
+                  typeSpeed={90}
+                  deleteSpeed={50}
+                  delaySpeed={1500}
+                  cursorColor={colors.primary}
+                />
               </motion.div>
             </div>
 
@@ -58,7 +110,8 @@ export const Hero: React.FC<HeroProps> = ({ data }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
-              className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl"
+              className="text-lg sm:text-xl text-gray-700 dark:text-gray-400 max-w-lg"
+              style={{ hyphens: 'auto' }}
             >
               {data.about}
             </motion.p>
@@ -69,54 +122,29 @@ export const Hero: React.FC<HeroProps> = ({ data }) => {
               transition={{ duration: 0.8, delay: 1 }}
               className="flex flex-col sm:flex-row gap-4"
             >
-              <Button size="lg" className="flex items-center gap-2">
+              <Button
+                size="lg"
+                className="flex items-center gap-2"
+                onClick={() => window.location.href = `mailto:${data.contact.email}`}
+                aria-label="Send Email"
+              >
                 <FiMail />
                 Get In Touch
               </Button>
-              <Button variant="outline" size="lg" className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="lg"
+                className="flex items-center gap-2"
+                onClick={() => window.open('/resume.pdf', '_blank')}
+                aria-label="Download CV"
+              >
                 <FiDownload />
                 Download CV
               </Button>
             </motion.div>
           </motion.div>
-
-          {/* Profile Image */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="flex justify-center lg:justify-end"
-          >
-            <div className="relative">
-              <div className="w-80 h-80 relative">
-                <Image
-                  src={data.photo}
-                  alt={data.name}
-                  fill
-                  className="rounded-full object-cover shadow-2xl"
-                  priority
-                />
-              </div>
-              <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary-500/20 to-secondary-500/20"></div>
-            </div>
-          </motion.div>
         </div>
-
-        {/* Scroll Indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center"
-          >
-            <div className="w-1 h-3 bg-gray-400 rounded-full mt-2"></div>
-          </motion.div>
-        </motion.div>
+      
       </div>
     </section>
   );

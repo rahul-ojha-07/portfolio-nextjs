@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { FiTrendingUp, FiStar, FiCode, FiDatabase, FiServer, FiTool, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { PersonalData } from '@/types';
+import { useTheme } from "@/hooks/useTheme"
+
+
+import data from "@/data/data.json"
 
 interface SkillsProps {
   skillData: PersonalData['skillCategories'];
@@ -46,11 +50,11 @@ const AnimatedCounter: React.FC<{ target: number; trigger: boolean }> = ({ targe
 
   useEffect(() => {
     if (!trigger) return;
-    
+
     let start = 0;
     const duration = 1500;
     const increment = target / (duration / 16);
-    
+
     const timer = setInterval(() => {
       start += increment;
       if (start >= target) {
@@ -64,7 +68,7 @@ const AnimatedCounter: React.FC<{ target: number; trigger: boolean }> = ({ targe
   }, [target, trigger]);
 
   return (
-    <motion.span 
+    <motion.span
       className="text-lg font-bold text-gray-900 dark:text-white"
       animate={trigger ? { scale: [1, 1.1, 1] } : {}}
       transition={{ duration: 0.3, delay: 0.5 }}
@@ -75,9 +79,9 @@ const AnimatedCounter: React.FC<{ target: number; trigger: boolean }> = ({ targe
 };
 
 // Individual skill bar component with collapse
-const SkillBar: React.FC<{ 
-  skill: { name: string; level: number; years: string }; 
-  index: number; 
+const SkillBar: React.FC<{
+  skill: { name: string; level: number; years: string };
+  index: number;
   isVisible: boolean;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
@@ -104,11 +108,10 @@ const SkillBar: React.FC<{
               {skill.name}
             </span>
           </button>
-          <span className={`px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-700 ${
-            skill.level >= 90 ? 'text-emerald-600 dark:text-emerald-400' : 
-            skill.level >= 80 ? 'text-blue-600 dark:text-blue-400' :
-            skill.level >= 70 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'
-          }`}>
+          <span className={`px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-700 ${skill.level >= 90 ? 'text-emerald-600 dark:text-emerald-400' :
+              skill.level >= 80 ? 'text-blue-600 dark:text-blue-400' :
+                skill.level >= 70 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'
+            }`}>
             {styling.badge}
           </span>
         </div>
@@ -147,13 +150,13 @@ const SkillBar: React.FC<{
                   />
                 </motion.div>
               </div>
-              
+
               {/* Glow effect on hover */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: isHovered ? 1 : 0 }}
                 className={`absolute inset-0 rounded-full blur-sm ${styling.glow}`}
-                style={{ 
+                style={{
                   background: `linear-gradient(to right, transparent, rgba(99, 102, 241, 0.3), transparent)`,
                   width: `${skill.level}%`
                 }}
@@ -185,10 +188,11 @@ export const Skills: React.FC<SkillsProps> = ({ skillData, additionalSkills }) =
   const [collapsedSkills, setCollapsedSkills] = useState<{ [key: string]: string[] }>({});
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });[1][2]
+  const { theme, colors } = useTheme();
 
   const toggleCategory = (category: string) => {
-    setCollapsedCategories(prev => 
-      prev.includes(category) 
+    setCollapsedCategories(prev =>
+      prev.includes(category)
         ? prev.filter(c => c !== category)
         : [...prev, category]
     );
@@ -204,7 +208,7 @@ export const Skills: React.FC<SkillsProps> = ({ skillData, additionalSkills }) =
   };
 
   const isCategoryCollapsed = (category: string) => collapsedCategories.includes(category);
-  const isSkillCollapsed = (category: string, skillName: string) => 
+  const isSkillCollapsed = (category: string, skillName: string) =>
     collapsedSkills[category]?.includes(skillName) || false;
 
   return (
@@ -286,7 +290,7 @@ export const Skills: React.FC<SkillsProps> = ({ skillData, additionalSkills }) =
                         {/* Skills Grid */}
                         <div className="grid md:grid-cols-2 gap-8">
                           {data.skills.map((skill, skillIndex) => (
-                            <SkillBar 
+                            <SkillBar
                               key={skill.name}
                               skill={skill}
                               index={skillIndex}
@@ -317,19 +321,30 @@ export const Skills: React.FC<SkillsProps> = ({ skillData, additionalSkills }) =
           </h3>
           <div className="flex flex-wrap justify-center gap-3">
             {additionalSkills.map((skill, index) => (
-              <motion.div
+              <motion.span
                 key={skill}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ duration: 0.4, delay: 1 + index * 0.05 }}
                 whileHover={{ scale: 1.1, y: -2 }}
-                className="bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 px-4 py-2 rounded-lg text-sm font-medium text-gray-800 dark:text-gray-200 hover:shadow-lg transition-all duration-300 border border-primary-200 dark:border-primary-700"
+                className={`
+          px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+          border shadow
+        `}
+                style={{
+                  backgroundColor: `${colors.primary}22`,
+                  color: colors.primary,
+                  borderColor: colors.primary,
+                }}
               >
                 {skill}
-              </motion.div>
+              </motion.span>
             ))}
           </div>
         </motion.div>
+
+
+
 
         {/* Stats Summary */}
         <motion.div
@@ -350,7 +365,7 @@ export const Skills: React.FC<SkillsProps> = ({ skillData, additionalSkills }) =
           </div>
           <div className="text-center p-6 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl text-white">
             <div className="text-3xl font-bold mb-2">
-              {Math.round(Object.values(skillData).reduce((acc, cat) => 
+              {Math.round(Object.values(skillData).reduce((acc, cat) =>
                 acc + cat.skills.reduce((sum, skill) => sum + skill.level, 0) / cat.skills.length, 0
               ) / Object.keys(skillData).length)}%
             </div>
@@ -360,4 +375,6 @@ export const Skills: React.FC<SkillsProps> = ({ skillData, additionalSkills }) =
       </div>
     </section>
   );
+
+
 };
