@@ -26,7 +26,10 @@ export const Contact: React.FC<ContactProps> = ({ data }) => {
     console.log('Form submitted:', formData);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  // Single change handler that supports both input and textarea
+  const handleChange: React.ChangeEventHandler<
+    HTMLInputElement | HTMLTextAreaElement
+  > = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -52,7 +55,7 @@ export const Contact: React.FC<ContactProps> = ({ data }) => {
               className="text-lg"
               style={{ color: colors.foreground, opacity: 0.7 }}
             >
-              Let's discuss your next project
+              Let&apos;s discuss your next project
             </p>
           </div>
         </AnimatedSection>
@@ -117,32 +120,17 @@ export const Contact: React.FC<ContactProps> = ({ data }) => {
                 required
                 colors={colors}
               />
-              <div>
-                <label
-                  htmlFor="message"
-                  className="block mb-2 text-sm font-medium"
-                  style={{ color: colors.foreground }}
-                >
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={5}
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 rounded-lg transition-colors"
-                  style={{
-                    backgroundColor: colors.card,
-                    color: colors.foreground,
-                    border: `1px solid ${colors.border}`,
-                    resize: 'vertical',
-                  }}
-                  onFocus={e => e.currentTarget.style.borderColor = colors.primary}
-                  onBlur={e => e.currentTarget.style.borderColor = colors.border}
-                ></textarea>
-              </div>
+              {/* Use type="textarea" for message */}
+              <FormField
+                label="Message"
+                id="message"
+                name="message"
+                type="textarea"
+                value={formData.message}
+                onChange={handleChange}
+                required
+                colors={colors}
+              />
 
               <Button
                 type="submit"
@@ -193,7 +181,10 @@ const ContactInfoItem: React.FC<ContactInfoItemProps> = ({
       <Icon style={{ color: iconColor }} className="text-xl" aria-hidden="true" />
     </div>
     <div style={{ color: 'inherit' }}>
-      <h3 className="text-lg font-semibold" style={{ marginBottom: 2, color: 'inherit' }}>
+      <h3
+        className="text-lg font-semibold"
+        style={{ marginBottom: 2, color: 'inherit' }}
+      >
         {title}
       </h3>
       {isLink && link ? (
@@ -215,11 +206,9 @@ interface FormFieldProps {
   label: string;
   id: string;
   name: string;
-  type: string;
+  type: string; // Will be "textarea" for textarea fields
   value: string;
-  onChange:
-  | React.ChangeEventHandler<HTMLInputElement>
-  | React.ChangeEventHandler<HTMLTextAreaElement>;
+  onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   required?: boolean;
   colors: {
     background: string;
@@ -249,22 +238,43 @@ const FormField: React.FC<FormFieldProps> = ({
     >
       {label}
     </label>
-    <input
-      id={id}
-      name={name}
-      type={type}
-      value={value}
-      onChange={onChange}
-      required={required}
-      className="w-full px-4 py-2 rounded-lg transition-colors"
-      style={{
-        backgroundColor: colors.card,
-        color: colors.foreground,
-        border: `1px solid ${colors.border}`,
-      }}
-      onFocus={e => (e.currentTarget.style.borderColor = colors.primary)}
-      onBlur={e => (e.currentTarget.style.borderColor = colors.border)}
-      aria-required={required}
-    />
+    {type === 'textarea' ? (
+      <textarea
+        id={id}
+        name={name}
+        rows={5}
+        value={value}
+        onChange={onChange}
+        required={required}
+        className="w-full px-4 py-2 rounded-lg transition-colors"
+        style={{
+          backgroundColor: colors.card,
+          color: colors.foreground,
+          border: `1px solid ${colors.border}`,
+          resize: 'vertical',
+        }}
+        onFocus={(e) => (e.currentTarget.style.borderColor = colors.primary)}
+        onBlur={(e) => (e.currentTarget.style.borderColor = colors.border)}
+        aria-required={required}
+      />
+    ) : (
+      <input
+        id={id}
+        name={name}
+        type={type}
+        value={value}
+        onChange={onChange as React.ChangeEventHandler<HTMLInputElement>}
+        required={required}
+        className="w-full px-4 py-2 rounded-lg transition-colors"
+        style={{
+          backgroundColor: colors.card,
+          color: colors.foreground,
+          border: `1px solid ${colors.border}`,
+        }}
+        onFocus={(e) => (e.currentTarget.style.borderColor = colors.primary)}
+        onBlur={(e) => (e.currentTarget.style.borderColor = colors.border)}
+        aria-required={required}
+      />
+    )}
   </div>
 );
