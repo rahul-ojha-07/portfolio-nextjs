@@ -15,6 +15,7 @@ export interface PersonalData {
       other?: Array<{ name: string; url: string }>;
     };
   };
+   socialLinks?: SocialLink[];
 
   skillCategories: { [key: string]: SkillCategory };
   additionalSkills: string[];
@@ -80,7 +81,41 @@ export interface ColorScheme {
   foreground: string;
   primary: string;
   secondary: string;
+  accent: string;
+  card: string;
+  cardShadow: string;
+  cardBorder: string;
+  badgeBackground: string;
+  badgeText: string;
+  tagBackground: string;
+  tagText: string;
+  highlight: string;
+  border: string;
+
+  skillBarBg: string;
+  skillBarBgDark: string;
+  skillGlow: string;
+  skillBadgeExpert: string;
+  skillBadgeAdvanced: string;
+  skillBadgeIntermediate: string;
+  skillBadgeBeginner: string;
+  skillBadgeText: string;
+
+  statCardGradient1: string;
+  statCardGradient2: string;
+  statCardGradient3: string;
+  statCardGradient4: string;
+  statCardGradient5: string;
+  statCardGradient6: string;
 }
+
+export interface ThemeContextType {
+  theme: "light" | "dark";
+  colors: ColorScheme;
+  toggleTheme: () => void;
+}
+
+
 
 export interface BlogPost {
   title: string;
@@ -114,5 +149,12 @@ export interface TestimonialStats {
   totalReviews: number;
   averageRating: number;
   recommendationRate: number;
+}
+
+// Add this interface for one social link
+export interface SocialLink {
+  label: string;        // e.g., "GitHub"
+  icon: string;         // e.g., "FiGithub" (icon component name as string)
+  url: string;          // link or mailto
 }
 

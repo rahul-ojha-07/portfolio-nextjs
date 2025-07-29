@@ -1,15 +1,15 @@
 {
-    "name": "Rahul Ojha",
+    "name": "Jhon Doe",
     "title": [
         "Software Engineer",
         "Java Developer",
         "Backend Developer"
     ],
-    "about": "I'm Rahul, a passionate developer with a love for problem solving. Here, you'll get a glimpse into my journey, projects, and the skills I bring to the table.",
+    "about": "I'm Jhon, a passionate developer with a love for problem solving. Here, you'll get a glimpse into my journey, projects, and the skills I bring to the table.",
     "photo": "/photo.jpg",
     "contact": {
-        "email": "rahulojha1097@gmail.com",
-        "location": "Bengaluru, India",
+        "email": "jhon.doe@gmail.com",
+        "location": "Austin, TX",
         "phone": "",
         "social": {
             "linkedin": "https://linkedin.com/in/yourprofile",
@@ -25,7 +25,7 @@
         "skills": true,
         "experience": true,
         "projects": true,
-        "testimonials": false,
+        "testimonials": true,
         "contact": true
     },
     "skills": [
@@ -334,7 +334,7 @@
     "testimonials": [
         {
             "id": 1,
-            "quote": "Rahul is a detail-oriented and innovative backend developer who consistently delivers high-quality solutions.",
+            "quote": "Jhon is a detail-oriented and innovative backend developer who consistently delivers high-quality solutions.",
             "author": "Sarah Johnson",
             "position": "Senior Engineering Manager",
             "company": "TechCorp",
@@ -395,16 +395,64 @@
     },
     "colorSchemes": {
         "light": {
-            "background": "#F3F4F6",
-            "foreground": "#111827",
-            "primary": "#6366F1",
-            "secondary": "#F59E42"
+            "background": "#F8FAFC",
+            "foreground": "#1E293B",
+            "primary": "#4169E1",
+            "secondary": "#F97316",
+            "accent": "#14B8A6",
+            "card": "#FFFFFF",
+            "cardShadow": "rgba(65, 105, 225, 0.06)",
+            "cardBorder": "#E2E8F0",
+            "badgeBackground": "#DBEAFE",
+            "badgeText": "#1D4ED8",
+            "tagBackground": "#E0F2FE",
+            "tagText": "#0284C7",
+            "highlight": "#FEF3C7",
+            "border": "#C7D2FE",
+            "skillBarBg": "#E5E7EB",
+            "skillBarBgDark": "#232937",
+            "skillGlow": "#4169E1",
+            "skillBadgeExpert": "#10B981",
+            "skillBadgeAdvanced": "#4169E1",
+            "skillBadgeIntermediate": "#F59E0B",
+            "skillBadgeBeginner": "#EF4444",
+            "skillBadgeText": "#FFFFFF",
+            "statCardGradient1": "#4169E1",
+            "statCardGradient2": "#14B8A6",
+            "statCardGradient3": "#0284C7",
+            "statCardGradient4": "#F59E0B",
+            "statCardGradient5": "#93C5FD",
+            "statCardGradient6": "#7C3AED"
         },
         "dark": {
-            "background": "#111827",
-            "foreground": "#F3F4F6",
-            "primary": "#8B5CF6",
-            "secondary": "#FBBF24"
+            "background": "#0F172A",
+            "foreground": "#F8FAFC",
+            "primary": "#6A8DF4",
+            "secondary": "#FDBA74",
+            "accent": "#2DD4BF",
+            "card": "#1E293B",
+            "cardShadow": "rgba(65, 105, 225, 0.08)",
+            "cardBorder": "#334155",
+            "badgeBackground": "#1E3A8A",
+            "badgeText": "#DBEAFE",
+            "tagBackground": "#1E40AF",
+            "tagText": "#93C5FD",
+            "highlight": "#3B3F56",
+            "border": "#3B82F6",
+            "skillBarBg": "#232937",
+            "skillBarBgDark": "#232937",
+            "skillGlow": "#6A8DF4",
+            "skillBadgeExpert": "#10B981",
+            "skillBadgeAdvanced": "#6A8DF4",
+            "skillBadgeIntermediate": "#FBBF24",
+            "skillBadgeBeginner": "#EF4444",
+            "skillBadgeText": "#FFFFFF",
+            "statCardGradient1": "#6A8DF4",
+            "statCardGradient2": "#2DD4BF",
+            "statCardGradient3": "#FBBF24",
+            "statCardGradient4": "#1E3A8A",
+            "statCardGradient5": "#93C5FD",
+            "statCardGradient6": "#1E293B"
         }
     },
     "blog": [],
@@ -418,6 +466,28 @@
             "backend developer",
             "microservices specialist"
         ],
-        "description": "Rahul Ojha - Java Backend Developer, Microservices, Spring Boot, Cloud Engineering."
-    }
+        "description": "Jhon Doee - Java Backend Developer, Microservices, Spring Boot, Cloud Engineering."
+    },
+    "socialLinks": [
+        {
+            "label": "Email",
+            "icon": "FiMail",
+            "url": "mailto:you@example.com"
+        },
+        {
+            "label": "GitHub",
+            "icon": "FiGithub",
+            "url": "https://github.com/yourusername"
+        },
+        {
+            "label": "LinkedIn",
+            "icon": "FiLinkedin",
+            "url": "https://linkedin.com/in/yourprofile"
+        },
+        {
+            "label": "Twitter",
+            "icon": "FiTwitter",
+            "url": "https://twitter.com/yourprofile"
+        }
+    ]
 }

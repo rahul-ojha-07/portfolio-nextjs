@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import {
   FiBriefcase,
   FiCalendar,
@@ -12,7 +12,8 @@ import {
   FiX,
   FiExternalLink,
 } from "react-icons/fi";
-import type { WorkExperience, Company } from "@/types";
+import { useTheme } from "@/hooks/useTheme";
+import type { WorkExperience, Company, ColorScheme } from "@/types";
 
 interface ExperienceProps {
   work: WorkExperience[];
@@ -32,132 +33,140 @@ interface EnhancedWorkExperience extends WorkExperience {
 export const Experience: React.FC<ExperienceProps> = ({ work, companies }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const { colors } = useTheme();
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
-  const getCompanyLogo = (companyName: string) => companies.find(c => c.name === companyName)?.logo || null;
+  const getCompanyLogo = (name: string) =>
+    companies.find((c) => c.name === name)?.logo || null;
 
-  const totalYears = work.reduce((total, job) => {
-    const [start, end] = job.period.split("–");
+  const totalYears = work.reduce((acc, curr) => {
+    const [start, end] = curr.period.split("–");
     const startYear = parseInt(start);
     const endYear = end === "Present" ? new Date().getFullYear() : parseInt(end);
-    return total + (endYear - startYear);
+    return acc + (endYear - startYear);
   }, 0);
 
   return (
     <section
       ref={ref}
-      className="py-20 bg-gray-50 dark:bg-gray-900 relative overflow-x-hidden"
-      aria-label="Professional experience timeline"
+      className="py-20"
+      style={{ backgroundColor: colors.background }}
+      aria-label="Professional Experience Timeline"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
+        {/* Header Section and Stat Cards */}
         <motion.div
+          className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
         >
           <motion.div
+            className="inline-block mb-4"
             animate={{ rotate: [0, 5, -5, 0] }}
             transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-            className="inline-block mb-4"
           >
-            <FiBriefcase className="text-4xl text-primary-500" aria-hidden="true" />
+            <FiBriefcase
+              className="text-5xl"
+              style={{ color: colors.primary }}
+              aria-hidden="true"
+            />
           </motion.div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2
+            className="text-4xl md:text-5xl font-bold mb-2"
+            style={{ color: colors.foreground }}
+          >
             Professional Journey
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            {totalYears}+ years of experience building exceptional software solutions and leading teams
+          <p
+            className="mx-auto max-w-3xl text-xl"
+            style={{ color: colors.foreground, opacity: 0.75 }}
+          >
+            {totalYears}+ years of experience building exceptional software
+            solutions and leading teams
           </p>
         </motion.div>
 
-        {/* Summary Stats */}
         <motion.div
+          className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16"
         >
-          <StatCard label="Years Experience" value={`${totalYears}+`} />
-          <StatCard label="Companies" value={companies.length.toString()} />
-          <StatCard label="Positions" value={work.length.toString()} />
-          <StatCard label="Projects Delivered" value="50+" />
+          {[
+            { label: "Years Experience", value: `${totalYears}+` },
+            { label: "Companies", value: `${companies.length}` },
+            { label: "Positions", value: `${work.length}` },
+            { label: "Projects Delivered", value: "50+" },
+          ].map(({ label, value }) => (
+            <StatCard key={label} label={label} value={value} colors={colors} />
+          ))}
         </motion.div>
 
-        {/* Timeline for desktop */}
-        <div className="relative hidden md:block" aria-label="Experience timeline for desktop">
-          {/* Center vertical line */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-300 dark:bg-gray-600 opacity-80 -translate-x-1/2"></div>
+        {/* Desktop Timeline */}
+        <div className="relative hidden md:block" aria-label="Experience Timeline Desktop">
+          <div
+            className="absolute left-1/2 top-0 bottom-0 w-px"
+            style={{ backgroundColor: colors.border, opacity: 0.8, transform: "translateX(-50%)" }}
+          />
           <div className="space-y-24">
             {work.map((job, idx) => {
               const logo = getCompanyLogo(job.company);
               const isLeft = idx % 2 === 0;
               const expanded = expandedIndex === idx;
               return (
-                <div
-                  key={idx}
-                  className="relative flex justify-between items-stretch w-full min-h-[160px]"
-                >
-                  {isLeft ? (
-                    <>
-                      <div className="w-5/12 flex justify-end">
-                        <ExperienceCard
-                          job={job as EnhancedWorkExperience}
-                          index={idx}
-                          isVisible={isInView}
-                          logo={logo}
-                          expanded={expanded}
-                          onExpand={() => setExpandedIndex(idx)}
-                          onCollapse={() => setExpandedIndex(null)}
-                        />
-                      </div>
-                      {/* Pin */}
-                      <div className="absolute left-1/2 top-8 -translate-x-1/2 z-20">
-                        <Pin />
-                      </div>
-                      <div className="w-5/12"></div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="w-5/12"></div>
-                      {/* Pin */}
-                      <div className="absolute left-1/2 top-8 -translate-x-1/2 z-20">
-                        <Pin />
-                      </div>
-                      <div className="w-5/12 flex justify-start">
-                        <ExperienceCard
-                          job={job as EnhancedWorkExperience}
-                          index={idx}
-                          isVisible={isInView}
-                          logo={logo}
-                          expanded={expanded}
-                          onExpand={() => setExpandedIndex(idx)}
-                          onCollapse={() => setExpandedIndex(null)}
-                        />
-                      </div>
-                    </>
-                  )}
+                <div key={job.position + idx} className="relative flex w-full min-h-[160px]">
+                  <div className="w-1/2 flex justify-end pr-7">
+                    {isLeft && (
+                      <ExperienceCard
+                        job={job as EnhancedWorkExperience}
+                        index={idx}
+                        isVisible={isInView}
+                        logo={logo}
+                        expanded={expanded}
+                        onExpand={() => setExpandedIndex(idx)}
+                        onCollapse={() => setExpandedIndex(null)}
+                      />
+                    )}
+                  </div>
+                  <div className="absolute left-1/2 top-8 -translate-x-1/2 z-20">
+                    <Pin color={colors.primary} />
+                  </div>
+                  <div className="w-1/2 flex justify-start pl-7">
+                    {!isLeft && (
+                      <ExperienceCard
+                        job={job as EnhancedWorkExperience}
+                        index={idx}
+                        isVisible={isInView}
+                        logo={logo}
+                        expanded={expanded}
+                        onExpand={() => setExpandedIndex(idx)}
+                        onCollapse={() => setExpandedIndex(null)}
+                      />
+                    )}
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Timeline for mobile */}
-        <div className="relative md:hidden" aria-label="Experience timeline for mobile">
-          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-300 dark:bg-gray-600 opacity-80 -translate-x-1/2"></div>
+        {/* Mobile Timeline */}
+        <div className="relative md:hidden" aria-label="Experience Timeline Mobile">
+          <div
+            className="absolute left-1/2 top-0 bottom-0 w-px"
+            style={{ backgroundColor: colors.border, opacity: 0.8, transform: "translateX(-50%)" }}
+          />
           <div className="space-y-16">
             {work.map((job, idx) => {
               const logo = getCompanyLogo(job.company);
               const expanded = expandedIndex === idx;
               return (
-                <div key={idx} className="relative flex">
-                  {/* Pin */}
-                  <div className="absolute left-1/2 top-7 -translate-x-1/2 z-20">
-                    <Pin />
+                <div key={job.position + idx} className="relative w-full">
+                  <div className="hidden sm:block absolute left-1/2 top-7 -translate-x-1/2 z-20">
+                    <Pin color={colors.primary} />
                   </div>
-                  <div className="w-full flex flex-col">
+                  <div style={{ zIndex: expanded ? 30 : "auto" }}>
                     <ExperienceCard
                       job={job as EnhancedWorkExperience}
                       index={idx}
@@ -178,16 +187,16 @@ export const Experience: React.FC<ExperienceProps> = ({ work, companies }) => {
         {/* Companies Showcase */}
         {companies.length > 0 && (
           <motion.div
+            className="mt-20"
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="mt-20"
           >
             <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              <h3 className="text-3xl font-bold mb-4" style={{ color: colors.foreground }}>
                 Trusted by Industry Leaders
               </h3>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="mx-auto max-w-3xl" style={{ color: colors.foreground, opacity: 0.7 }}>
                 Proud to have worked with these amazing organizations
               </p>
             </div>
@@ -195,12 +204,12 @@ export const Experience: React.FC<ExperienceProps> = ({ work, companies }) => {
               {companies.map((company, idx) => (
                 <motion.div
                   key={company.name}
+                  className="relative w-24 h-24 md:w-32 md:h-32 grayscale hover:grayscale-0 transition-all duration-300"
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
                   whileHover={{ scale: 1.1 }}
-                  className="relative w-24 h-24 md:w-32 md:h-32 grayscale hover:grayscale-0 transition-all duration-300"
                 >
                   <Image
                     src={company.logo}
@@ -218,9 +227,18 @@ export const Experience: React.FC<ExperienceProps> = ({ work, companies }) => {
   );
 };
 
-// Pin/dot component used in timeline
-const Pin: React.FC = () => (
-  <div className="w-5 h-5 bg-primary-500 rounded-full border-4 border-white dark:border-gray-900 shadow-lg" aria-hidden="true" />
+// Pin component
+const Pin: React.FC<{ color: string }> = ({ color }) => (
+  <div
+    className="rounded-full border-4 border-white shadow-md"
+    style={{
+      backgroundColor: color,
+      width: 20,
+      height: 20,
+      boxShadow: "0 0 6px rgba(0,0,0,0.2)",
+    }}
+    aria-hidden="true"
+  />
 );
 
 interface ExperienceCardProps {
@@ -242,9 +260,10 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({
   expanded,
   onExpand,
   onCollapse,
-  mobile,
+  mobile = false,
 }) => {
   const [imageError, setImageError] = useState(false);
+  const { colors } = useTheme();
 
   const duration = (() => {
     const [start, end] = job.period.split("–");
@@ -253,59 +272,90 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({
     return endYear - startYear;
   })();
 
+  // Toggle expand/collapse on card click
   const handleCardClick = (e: React.MouseEvent) => {
-    if (!expanded) onExpand();
+    e.stopPropagation();
+    if (expanded) {
+      onCollapse();
+    } else {
+      onExpand();
+    }
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50, scale: 0.94 }}
-      animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
-      transition={{ duration: 0.6, delay: index * 0.15 }}
-      className={`bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 group max-w-xl min-w-[230px] relative cursor-pointer
-        ${expanded ? "ring-2 ring-primary-500" : ""}
-        z-30 md:z-auto
-      `}
       onClick={handleCardClick}
       tabIndex={0}
       role="button"
       aria-expanded={expanded}
+      aria-label={`Experience at ${job.company} - ${job.position}`}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (expanded) {
+            onCollapse();
+          } else {
+            onExpand();
+          }
+        }
+      }}
+      initial={{ opacity: 0, y: 50, scale: 0.94 }}
+      animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : {}}
+      transition={{ duration: 0.6, delay: 0.15 * index }}
+      className={`relative cursor-pointer rounded-2xl shadow-lg transition-shadow duration-500 flex flex-col border ${expanded ? "ring-2 ring-offset-2 ring-primary" : ""
+        } ${mobile ? "w-full" : "max-w-xl"} ${expanded ? "z-30" : "z-10"}`}
+      style={{
+        backgroundColor: expanded ? colors.card : colors.background,
+        borderColor: colors.border,
+        boxShadow: expanded
+          ? `0 0 12px 3px ${colors.cardShadow}`
+          : "0 0 5px rgba(0,0,0,0.05)",
+      }}
     >
       {expanded && (
         <button
-          className="absolute right-3 top-3 z-30 p-2 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-red-100 dark:hover:bg-red-900/40 text-gray-800 dark:text-gray-100"
+          aria-label="Close expanded details"
           onClick={(e) => {
             e.stopPropagation();
             onCollapse();
           }}
-          aria-label="Close details"
+          className="absolute top-3 right-3 z-40 rounded-full p-1 bg-gray-200 dark:bg-gray-700 hover:bg-red-600 hover:text-white transition-colors"
         >
           <FiX />
         </button>
       )}
-      <div className="p-6 border-b border-gray-100 dark:border-gray-700 pointer-events-none">
+
+      {/* Header */}
+      <div className="p-6 border-b" style={{ borderColor: colors.border }}>
         <div className="flex items-start gap-4">
           {logo && (
-            <div className="relative w-14 h-14 flex-shrink-0 pointer-events-none">
+            <div className="relative w-14 h-14 flex-shrink-0">
               {!imageError ? (
                 <Image
                   src={logo}
-                  alt={job.company}
+                  alt={`${job.company} logo`}
                   fill
-                  className="rounded-xl object-contain bg-white p-2 shadow-sm"
+                  className="object-contain rounded-lg p-2 bg-white shadow-sm"
                   onError={() => setImageError(true)}
                 />
               ) : (
-                <div className="w-14 h-14 bg-primary-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
-                  {job.company.substring(0, 2).toUpperCase()}
+                <div
+                  aria-hidden="true"
+                  className="flex items-center justify-center rounded-lg text-white font-semibold text-lg w-full h-full"
+                  style={{ backgroundColor: colors.primary }}
+                >
+                  {job.company.slice(0, 2).toUpperCase()}
                 </div>
               )}
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-gray-800" />
+              <div
+                className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-white"
+                aria-hidden="true"
+              />
             </div>
           )}
           <div className="flex-grow min-w-0">
-            <div className="flex items-center space-x-2 mb-1 min-w-0">
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate">
+            <div className="flex items-center gap-2">
+              <h3 className="truncate font-semibold" style={{ color: colors.foreground, fontSize: 16 }}>
                 {job.position}
               </h3>
               {job.companyWebsite && (
@@ -313,38 +363,35 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({
                   href={job.companyWebsite}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-500 hover:text-primary-600 transition-colors pointer-events-auto"
                   onClick={(e) => e.stopPropagation()}
+                  tabIndex={-1}
+                  aria-label={`${job.company} website`}
+                  style={{ color: colors.primary }}
                 >
-                  <FiExternalLink className="w-4 h-4" />
+                  <FiExternalLink />
                 </a>
               )}
             </div>
-            <p className="text-base sm:text-lg font-semibold text-primary-600 dark:text-primary-400 mb-2 truncate">
+            <p className="mb-2" style={{ color: colors.primary, fontWeight: 600 }}>
               {job.company}
             </p>
-            <div className="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-              {/* Period info (always visible) */}
-              <div className="flex items-center space-x-1 min-w-0">
-                <FiCalendar className="w-4 h-4 text-primary-500 flex-shrink-0" />
-                <span className="truncate">{job.period}</span>
-                <span className="ml-1 text-primary-500 font-medium">
-                  ({duration} {duration > 1 ? "yrs" : "yr"})
+            <div className="flex flex-wrap gap-3" style={{ color: colors.foreground, opacity: 0.7 }}>
+              <div className="flex items-center gap-1 whitespace-nowrap">
+                <FiCalendar style={{ color: colors.primary }} />
+                <span>{job.period}</span>
+                <span className="font-semibold ml-1">
+                  {duration} yr{duration > 1 ? "s" : ""}
                 </span>
               </div>
-
-              {/* Location: hide on mobile */}
               {job.location && (
-                <div className="hidden sm:flex items-center space-x-1 min-w-0">
-                  <FiMapPin className="w-4 h-4 text-primary-500 flex-shrink-0" />
-                  <span className="truncate">{job.location}</span>
+                <div className="hidden sm:flex items-center gap-1 whitespace-nowrap">
+                  <FiMapPin style={{ color: colors.primary }} />
+                  <span>{job.location}</span>
                 </div>
               )}
-
-              {/* Team size info */}
               {job.teamSize && (
-                <div className="flex items-center space-x-1 min-w-0">
-                  <FiUsers className="w-4 h-4 text-primary-500 flex-shrink-0" />
+                <div className="flex items-center gap-1 whitespace-nowrap">
+                  <FiUsers style={{ color: colors.primary }} />
                   <span>Team {job.teamSize}</span>
                 </div>
               )}
@@ -353,113 +400,137 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({
         </div>
       </div>
 
-      <div className="p-6 pointer-events-none">
-        <p className={`transition-all duration-400 ${expanded ? "" : "line-clamp-2"}`}>
-          {job.description}
-        </p>
+      {/* Body */}
+      <div className="p-6" style={{ color: colors.foreground }}>
         {expanded && (
           <>
-            {/* Highlights */}
-            {job.highlights && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
-                {job.highlights.map((highlight, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={isVisible ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ delay: index * 0.1 + idx * 0.06 }}
-                    className="text-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-600"
-                  >
-                    <div className="text-2xl font-bold text-primary-600 dark:text-primary-400 mb-1">
-                      {highlight.value}
-                    </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">
-                      {highlight.metric}
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                      {highlight.description}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-
-            {/* Technologies used */}
-            {job.technologies && (
-              <div className="mb-4">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
-                  <FiCode className="w-4 h-4 mr-2 text-primary-500" />
-                  Technologies Used
-                </h4>
-                <div className="flex flex-wrap gap-2 pointer-events-auto">
-                  {job.technologies.map((tech) => (
-                    <span
-                      key={tech}
-                      className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-200 text-xs rounded-full font-medium"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Achievements */}
-            {job.achievements && (
-              <div className="my-4">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
-                  <FiAward className="w-4 h-4 mr-2 text-primary-500" />
-                  Key Achievements
-                </h4>
-                <ul className="space-y-2 text-sm">
-                  {job.achievements.map((achievement, idx) => (
-                    <li key={idx} className="flex items-start space-x-2">
-                      <span className="block w-2 h-2 mt-2 bg-primary-500 rounded-full" />
-                      <span>{achievement}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Notable Projects */}
-            {job.keyProjects && (
-              <div>
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
-                  <FiTrendingUp className="w-4 h-4 mr-2 text-primary-500" />
-                  Notable Projects
-                </h4>
-                <ul className="space-y-2 text-sm">
-                  {job.keyProjects.map((project, idx) => (
-                    <li key={idx} className="flex items-start space-x-2">
-                      <span className="block w-2 h-2 mt-2 bg-secondary-500 rounded-full" />
-                      <span>{project}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <p>{job.description}</p>
+            <AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.4 }}
+                className="space-y-6 mt-4"
+              >
+                {job.highlights && <HighlightSection highlights={job.highlights} />}
+                {job.technologies && <TechnologiesSection technologies={job.technologies} />}
+                {job.achievements && <AchievementSection achievements={job.achievements} />}
+                {job.keyProjects && <ProjectsSection projects={job.keyProjects} />}
+              </motion.div>
+            </AnimatePresence>
           </>
         )}
       </div>
-
-      {/* Overlay clickable button only when collapsed */}
-      {!expanded && (
-        <button
-          tabIndex={-1}
-          aria-label={`Read full details for position ${job.position} at ${job.company}`}
-          className="absolute inset-0 z-10 block bg-transparent cursor-pointer"
-          onClick={onExpand}
-          type="button"
-        />
-      )}
     </motion.div>
   );
 };
 
-const StatCard: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
-    <div className="text-3xl font-bold text-primary-600 dark:text-primary-400 mb-2">{value}</div>
-    <div className="text-gray-600 dark:text-gray-400 text-sm">{label}</div>
+interface StatCardProps {
+  label: string;
+  value: string;
+  colors: ColorScheme;
+}
+
+const StatCard: React.FC<StatCardProps> = ({ label, value, colors }) => (
+  <div
+    className="rounded-xl px-6 py-8"
+    style={{
+      backgroundColor: colors.card,
+      border: `1px solid ${colors.border}`,
+      boxShadow: `0 0 10px ${colors.cardShadow}`,
+      color: colors.foreground,
+    }}
+  >
+    <div style={{ color: colors.primary }} className="text-3xl font-bold mb-2">
+      {value}
+    </div>
+    <div style={{ color: colors.foreground, opacity: 0.75 }}>{label}</div>
   </div>
 );
+
+const HighlightSection: React.FC<{
+  highlights: { metric: string; value: string; description: string }[];
+}> = ({ highlights }) => {
+  const { colors } = useTheme();
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {highlights.map((h, idx) => (
+        <div
+          key={idx}
+          className="rounded-lg p-4"
+          style={{
+            backgroundColor: colors.highlight,
+            border: `1px solid ${colors.border}`,
+            color: colors.primary,
+          }}
+        >
+          <div className="text-2xl font-bold">{h.value}</div>
+          <div className="text-sm font-medium">{h.metric}</div>
+          <div className="text-xs mt-1">{h.description}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const TechnologiesSection: React.FC<{ technologies: string[] }> = ({ technologies }) => {
+  const { colors } = useTheme();
+  return (
+    <div>
+      <h4 className="flex items-center gap-2" style={{ color: colors.primary }}>
+        <FiCode />
+        Technologies Used
+      </h4>
+      <div className="flex flex-wrap gap-2 mt-2">
+        {technologies.map((tech, idx) => (
+          <span
+            key={idx}
+            className="rounded-full border px-3 py-1 text-xs font-medium"
+            style={{
+              backgroundColor: colors.badgeBackground,
+              color: colors.badgeText,
+              borderColor: colors.border,
+            }}
+          >
+            {tech}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const AchievementSection: React.FC<{ achievements: string[] }> = ({ achievements }) => {
+  const { colors } = useTheme();
+  return (
+    <div>
+      <h4 className="flex items-center gap-2 mt-6" style={{ color: colors.primary }}>
+        <FiAward />
+        Key Achievements
+      </h4>
+      <ul className="list-disc list-inside mt-2" style={{ color: colors.foreground }}>
+        {achievements.map((a, i) => (
+          <li key={i}>{a}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+const ProjectsSection: React.FC<{ projects: string[] }> = ({ projects }) => {
+  const { colors } = useTheme();
+  return (
+    <div>
+      <h4 className="flex items-center gap-2 mt-6" style={{ color: colors.primary }}>
+        <FiTrendingUp />
+        Notable Projects
+      </h4>
+      <ul className="list-disc list-inside mt-2" style={{ color: colors.foreground }}>
+        {projects.map((p, i) => (
+          <li key={i}>{p}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};

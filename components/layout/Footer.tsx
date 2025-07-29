@@ -1,6 +1,7 @@
 import React from 'react';
 import { PersonalData } from '@/types';
 import { FiGithub, FiLinkedin, FiTwitter, FiMail } from 'react-icons/fi';
+import { useTheme } from '@/hooks/useTheme';
 
 interface FooterProps {
   data: PersonalData;
@@ -8,9 +9,14 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ data }) => {
   const currentYear = new Date().getFullYear();
+  const { colors } = useTheme();
 
   return (
-    <footer className="bg-gray-50 dark:bg-gray-900 py-12">
+    <footer
+      className="py-12"
+      style={{ backgroundColor: colors.background }}
+      aria-label="Footer section"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-center space-y-4">
           <div className="flex space-x-6">
@@ -19,10 +25,13 @@ export const Footer: React.FC<FooterProps> = ({ data }) => {
                 href={data.contact.social.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 dark:text-gray-400 hover:text-primary-500 transition-colors"
+                className="transition-colors"
                 aria-label="GitHub"
+                style={{ color: colors.foreground }}
+                onMouseEnter={e => (e.currentTarget.style.color = colors.primary)}
+                onMouseLeave={e => (e.currentTarget.style.color = colors.foreground)}
               >
-                <FiGithub size={24} />
+                <FiGithub size={24} aria-hidden="true" />
               </a>
             )}
             {data.contact.social.linkedin && (
@@ -30,10 +39,13 @@ export const Footer: React.FC<FooterProps> = ({ data }) => {
                 href={data.contact.social.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 dark:text-gray-400 hover:text-primary-500 transition-colors"
+                className="transition-colors"
                 aria-label="LinkedIn"
+                style={{ color: colors.foreground }}
+                onMouseEnter={e => (e.currentTarget.style.color = colors.primary)}
+                onMouseLeave={e => (e.currentTarget.style.color = colors.foreground)}
               >
-                <FiLinkedin size={24} />
+                <FiLinkedin size={24} aria-hidden="true" />
               </a>
             )}
             {data.contact.social.twitter && (
@@ -41,21 +53,30 @@ export const Footer: React.FC<FooterProps> = ({ data }) => {
                 href={data.contact.social.twitter}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 dark:text-gray-400 hover:text-primary-500 transition-colors"
+                className="transition-colors"
                 aria-label="Twitter"
+                style={{ color: colors.foreground }}
+                onMouseEnter={e => (e.currentTarget.style.color = colors.primary)}
+                onMouseLeave={e => (e.currentTarget.style.color = colors.foreground)}
               >
-                <FiTwitter size={24} />
+                <FiTwitter size={24} aria-hidden="true" />
               </a>
             )}
             <a
               href={`mailto:${data.contact.email}`}
-              className="text-gray-600 dark:text-gray-400 hover:text-primary-500 transition-colors"
               aria-label="Email"
+              className="transition-colors"
+              style={{ color: colors.foreground }}
+              onMouseEnter={e => (e.currentTarget.style.color = colors.primary)}
+              onMouseLeave={e => (e.currentTarget.style.color = colors.foreground)}
             >
-              <FiMail size={24} />
+              <FiMail size={24} aria-hidden="true" />
             </a>
           </div>
-          <p className="text-gray-600 dark:text-gray-400 text-center">
+          <p
+            className="text-center"
+            style={{ color: colors.foreground, opacity: 0.7 }}
+          >
             © {currentYear} {data.name}. All rights reserved.
           </p>
         </div>

@@ -17,7 +17,9 @@ export const Projects: React.FC<ProjectsProps> = ({ projects }) => {
     <section
       id="projects"
       ref={ref}
-      className="py-20 bg-white dark:bg-gray-800"
+      style={{ backgroundColor: colors.background }}
+      aria-label="Featured Projects"
+      className="py-20"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
@@ -27,10 +29,16 @@ export const Projects: React.FC<ProjectsProps> = ({ projects }) => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1
+            style={{ color: colors.foreground }}
+            className="text-4xl md:text-5xl font-bold mb-4"
+          >
             Featured Projects
-          </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400">
+          </h1>
+          <p
+            style={{ color: colors.foreground, opacity: 0.75 }}
+            className="text-xl max-w-3xl mx-auto"
+          >
             Some of my recent work and open source contributions
           </p>
         </motion.div>
@@ -44,15 +52,28 @@ export const Projects: React.FC<ProjectsProps> = ({ projects }) => {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.55, delay: idx * 0.07 }}
               whileHover={{ y: -5, scale: 1.03 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg hover:shadow-primary-500/40 transition-all duration-300 group border border-gray-100 dark:border-gray-800 flex flex-col"
+              style={{
+                backgroundColor: colors.card ? colors.card : colors.background,
+                borderColor: colors.cardBorder,
+                boxShadow: `0 4px 6px ${colors.cardShadow ?? "rgba(0, 0, 0, 0.1)"
+                  }`,
+              }}
+              className="rounded-2xl overflow-hidden border flex flex-col transition-shadow duration-300"
+              aria-label={`Project: ${project.name}`}
             >
-              <div className="p-7 flex flex-col flex-1">
+              <div className="p-7 flex flex-col flex-grow">
                 {/* Title */}
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 text-balance">
+                <h2
+                  style={{ color: colors.foreground }}
+                  className="text-xl font-bold mb-2 break-words"
+                >
                   {project.name}
-                </h3>
+                </h2>
                 {/* Description */}
-                <p className="text-gray-600 dark:text-gray-300 mb-4 flex-1">
+                <p
+                  style={{ color: colors.foreground, opacity: 0.75 }}
+                  className="mb-4 flex-grow"
+                >
                   {project.description}
                 </p>
 
@@ -60,29 +81,37 @@ export const Projects: React.FC<ProjectsProps> = ({ projects }) => {
                 {(project.roles || project.outcomes) && (
                   <div className="mb-3">
                     {project.roles && (
-                      <p className="text-xs mb-1 text-gray-500 dark:text-gray-400">
-                        <span className="font-semibold">Role:</span> {project.roles}
+                      <p
+                        style={{ color: colors.foreground, opacity: 0.6 }}
+                        className="text-xs mb-1"
+                      >
+                        <span style={{ fontWeight: "600" }}>Role: </span>
+                        {project.roles}
                       </p>
                     )}
                     {project.outcomes && (
-                      <p className="text-xs text-green-600 dark:text-green-400">
-                        <span className="font-semibold">Outcome:</span> {project.outcomes}
+                      <p
+                        style={{ color: colors.accent ?? colors.primary }}
+                        className="text-xs"
+                      >
+                        <span style={{ fontWeight: "600" }}>Outcome: </span>
+                        {project.outcomes}
                       </p>
                     )}
                   </div>
                 )}
 
                 {/* Technologies */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.technologies.map((tech, techIndex) => (
+                <div className="mb-6 flex flex-wrap gap-2">
+                  {project.technologies.map((tech) => (
                     <span
                       key={tech}
-                      className="px-3 py-1 rounded-full text-xs font-medium border shadow"
                       style={{
-                        backgroundColor: `${colors.primary}22`, // subtle accent BG
+                        backgroundColor: colors.primary + "22", // ~13% alpha
                         color: colors.primary,
                         borderColor: colors.primary,
                       }}
+                      className="px-3 py-1 rounded-full text-xs font-medium border"
                     >
                       {tech}
                     </span>
@@ -90,15 +119,20 @@ export const Projects: React.FC<ProjectsProps> = ({ projects }) => {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="flex gap-3 mt-auto">
+                <div className="mt-auto flex gap-3">
                   {project.github && (
                     <a
                       href={project.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-transparent border border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white transition-colors"
+                      style={{
+                        color: colors.primary,
+                        borderColor: colors.primary,
+                      }}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg border transition-colors hover:bg-primary-600 hover:text-white"
+                      aria-label={`View code for ${project.name} on GitHub`}
                     >
-                      <FiGithub className="w-4 h-4" />
+                      <FiGithub aria-hidden="true" />
                       Code
                     </a>
                   )}
@@ -107,9 +141,11 @@ export const Projects: React.FC<ProjectsProps> = ({ projects }) => {
                       href={project.demo}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-primary-500 text-white hover:bg-primary-600 transition-colors"
+                      style={{ backgroundColor: colors.primary }}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg text-white transition-colors hover:bg-primary-700"
+                      aria-label={`View live demo of ${project.name}`}
                     >
-                      <FiExternalLink className="w-4 h-4" />
+                      <FiExternalLink aria-hidden="true" />
                       Demo
                     </a>
                   )}

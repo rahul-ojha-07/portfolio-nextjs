@@ -1,110 +1,79 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React from "react";
+import { motion, HTMLMotionProps } from "framer-motion";
+import { useTheme } from "@/hooks/useTheme";
 
-interface CardProps {
-  children: React.ReactNode;
-  className?: string;
-  hover?: boolean;
-  padding?: 'none' | 'sm' | 'md' | 'lg';
-  variant?: 'default' | 'bordered' | 'elevated' | 'glass';
-}
-
-export const Card: React.FC<CardProps> = ({ 
-  children, 
-  className = '', 
-  hover = true,
-  padding = 'md',
-  variant = 'default'
-}) => {
-  const baseClasses = 'rounded-xl transition-all duration-300';
-  
-  const variants = {
-    default: 'bg-white dark:bg-gray-800 shadow-lg',
-    bordered: 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700',
-    elevated: 'bg-white dark:bg-gray-800 shadow-xl',
-    glass: 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border border-white/20 dark:border-gray-700/20',
-  };
-
-  const paddings = {
-    none: '',
-    sm: 'p-4',
-    md: 'p-6',
-    lg: 'p-8',
-  };
-
-  const hoverEffects = hover 
-    ? 'hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02]' 
-    : '';
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className={`${baseClasses} ${variants[variant]} ${paddings[padding]} ${hoverEffects} ${className}`}
-    >
-      {children}
-    </motion.div>
-  );
+type MotionButtonProps = Omit<HTMLMotionProps<"button">, "onAnimationStart"> & {
+  onAnimationStart?: (definition: any) => void;
 };
 
-// Specialized card components
-export const ProjectCard: React.FC<{ 
-  children: React.ReactNode; 
+interface ButtonProps extends MotionButtonProps {
+  variant?: "primary" | "secondary" | "outline";
+  size?: "sm" | "md" | "lg";
+  children: React.ReactNode;
   className?: string;
-}> = ({ children, className = '' }) => (
-  <Card variant="elevated" className={`group cursor-pointer ${className}`}>
-    {children}
-  </Card>
-);
+}
 
-export const SkillCard: React.FC<{ 
-  children: React.ReactNode; 
-  className?: string;
-}> = ({ children, className = '' }) => (
-  <Card 
-    variant="bordered" 
-    padding="sm" 
-    className={`text-center hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 ${className}`}
-  >
-    {children}
-  </Card>
-);
+export const Button: React.FC<ButtonProps> = ({
+  variant = "primary",
+  size = "md",
+  children,
+  className = "",
+  ...props
+}) => {
+  const { colors } = useTheme();
 
-export const TestimonialCard: React.FC<{ 
-  children: React.ReactNode; 
-  className?: string;
-}> = ({ children, className = '' }) => (
-  <Card 
-    variant="glass" 
-    className={`relative overflow-hidden ${className}`}
-  >
-    {children}
-  </Card>
-);
+  // Sizing
+  const sizes = {
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-base",
+    lg: "px-6 py-3 text-lg",
+  };
 
-export const InfoCard: React.FC<{ 
-  title: string;
-  value: string | number;
-  icon?: React.ReactNode;
-  className?: string;
-}> = ({ title, value, icon, className = '' }) => (
-  <Card 
-    variant="bordered" 
-    padding="md" 
-    className={`text-center group ${className}`}
-  >
-    {icon && (
-      <div className="w-12 h-12 mx-auto mb-4 text-primary-500 group-hover:scale-110 transition-transform">
-        {icon}
-      </div>
-    )}
-    <div className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-      {value}
-    </div>
-    <div className="text-sm text-gray-600 dark:text-gray-400">
-      {title}
-    </div>
-  </Card>
-);
+  // Set base style based on theme
+  const baseStyle: React.CSSProperties = {
+    borderRadius: 8,
+    fontWeight: 500,
+    transition: "all 0.18s cubic-bezier(.4,0,.2,1)",
+    outline: "none",
+    border: "none",
+    boxShadow: "none",
+  };
+
+  let variantStyle: React.CSSProperties = {};
+  let whileHover: any = { scale: 1.02 };
+
+  if (variant === "primary") {
+    variantStyle = {
+      backgroundColor: colors.primary,
+      color: colors.badgeText,
+    };
+    whileHover.backgroundColor = colors.secondary;
+  } else if (variant === "secondary") {
+    variantStyle = {
+      backgroundColor: colors.secondary,
+      color: colors.badgeText,
+    };
+    whileHover.backgroundColor = colors.primary;
+  } else if (variant === "outline") {
+    variantStyle = {
+      backgroundColor: "transparent",
+      color: colors.primary,
+      border: `2px solid ${colors.primary}`,
+    };
+    whileHover.backgroundColor = colors.primary;
+    whileHover.color = colors.badgeText;
+  }
+
+  return (
+    <motion.button
+      {...props}
+      type={props.type as any || "button"}
+      className={`inline-flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${sizes[size] || sizes.md} ${className}`}
+      style={{ ...baseStyle, ...variantStyle }}
+      whileHover={whileHover}
+      whileTap={{ scale: 0.98 }}
+    >
+      {children}
+    </motion.button>
+  );
+};

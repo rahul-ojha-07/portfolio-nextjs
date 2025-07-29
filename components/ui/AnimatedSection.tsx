@@ -7,10 +7,10 @@ interface AnimatedSectionProps {
   delay?: number;
 }
 
-export const AnimatedSection: React.FC<AnimatedSectionProps> = ({ 
-  children, 
-  className = '', 
-  delay = 0 
+export const AnimatedSection: React.FC<AnimatedSectionProps> = ({
+  children,
+  className = '',
+  delay = 0
 }) => {
   return (
     <motion.div
